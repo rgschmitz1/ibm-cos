@@ -1,0 +1,4 @@
+# Ignore everything
+*
+# Allow the following files and directories
+!ibm-cos.sh
