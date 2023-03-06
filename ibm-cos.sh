@@ -62,6 +62,14 @@ prompt() {
 }
 
 
+# Create a tar archive for uploading
+create_archive_object() {
+	prompt info "Creating $KEY.tar for upload"
+	tar c -f $KEY.tar $(echo $OBJECT | tr ',' ' ')
+	OBJECT=$KEY.tar
+}
+
+
 # Upload file to IBM cloud object storage
 upload() {
 	# Verify bucket exists otherwise create it here
@@ -72,6 +80,9 @@ upload() {
 			exit 1
 		fi
 	fi
+
+	# If object is comma seperated list, create a tar file before uploading
+	echo $OBJECT | grep -q ',' && create_archive_object
 	prompt info "Uploading $KEY to $BUCKET"
 	ibmcloud cos object-put --bucket $BUCKET --key $KEY --body $OBJECT
 	return $?
@@ -181,7 +192,7 @@ if [ "$MODE" = 'upload' ] && [ -z "$OBJECT" ]; then
 fi
 
 # Login using ibmcloud cli
-ibmcloud login --apikey $API_KEY -r $REGION || exit 0
+ibmcloud login --apikey $API_KEY -r $REGION || exit $?
 
 # Set the download directory
 ibmcloud cos config ddl --ddl $DOWNLOAD_DIR
