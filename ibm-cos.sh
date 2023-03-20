@@ -67,6 +67,7 @@ create_archive_object() {
 	prompt info "Creating $KEY.tar for upload"
 	tar c -f $KEY.tar $(echo $OBJECT | tr ',' ' ')
 	OBJECT=$KEY.tar
+	CLEANUP=$OBJECT
 }
 
 
@@ -85,7 +86,9 @@ upload() {
 	echo $OBJECT | grep -q ',' && create_archive_object
 	prompt info "Uploading $KEY to $BUCKET"
 	ibmcloud cos object-put --bucket $BUCKET --key $KEY --body $OBJECT
-	return $?
+	local ret=$?
+	[ -n "$CLEANUP" ] && rm $CLEANUP
+	return $ret
 }
 
 
