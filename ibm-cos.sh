@@ -66,7 +66,8 @@ prompt() {
 create_archive_object() {
 	prompt info "Creating $KEY.tar for upload"
 	tar c -f $KEY.tar $(echo $OBJECT | tr ',' ' ')
-	OBJECT=$KEY.tar
+	KEY+=.tar
+	OBJECT=$KEY
 	CLEANUP=$OBJECT
 }
 
